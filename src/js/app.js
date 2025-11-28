@@ -1,13 +1,8 @@
 import '@/vars'; // global vars 
-import '@/service-worker'; // enable service-worker
 
-console.log('Check import functions:', $("body"));
+console.log('Check import functions:', $("h1").textContent); 
 
-const testAsync =  async () => {
-   await console.log('Check async funtions: Ok')
-}
-
-testAsync()
+const testAsync =  async () => console.log('Check async funtions: Ok')
 
 try {
    console.log('Check babel job:', testAsync);
