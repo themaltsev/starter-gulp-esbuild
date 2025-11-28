@@ -1,14 +1,20 @@
 import '@/vars'; // global vars 
 
-console.log('Check import functions:', $("h1").textContent); 
+console.log(`Check $("h1"): ${ $("h1").textContent }`)
 
-const testAsync =  async () => console.log('Check async funtions: Ok')
+const testAsync = async () => 'Async WORK'
+
+const var_test = await testAsync()
 
 try {
-   console.log('Check babel job:', testAsync);
+   
+   console.log(`Check babel: ${var_test}`);
 } catch (error) {
       console.log('Error', error);
 }
+
+
+
 
 
 

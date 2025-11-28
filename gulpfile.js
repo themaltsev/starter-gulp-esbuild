@@ -1,7 +1,6 @@
 import gulp from 'gulp';
 import browserSync from 'browser-sync';
 import cleancss from 'gulp-clean-css';
-//import concat from 'gulp-concat';
 import rename from 'gulp-rename';
 import notify from 'gulp-notify'
 
@@ -11,17 +10,16 @@ import babel from 'esbuild-plugin-babel'
 
 
 const esb_config = {
-    outfile: "scripts.min.js",
+    outfile: "app.min.js",
     bundle: true,
     minify: true,
     sourcemap: true,
-    logLevel: "info", // Provides detailed output statistics
+    logLevel: 'info',
+    format: 'esm',
+    target: ['esnext'],
     plugins: [ babel()],
     // Define aliases
     alias: {
-        '@p': './src/js/custom-plugin',
-        '@l': './src/js/libs',
-        '@z': './src/js/zayavka',
         '~': './src',
         '@': './src/js', // Убедитесь, что тут правильный путь
         '@s': './src/css',
