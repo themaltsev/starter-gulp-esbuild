@@ -18,13 +18,13 @@ const esb_config = {
     format: 'esm',
     target: ['esnext'],
     plugins: [ babel()],
-    // Define aliases
+    
+    // Алиасы для укорачивания путей 
     alias: {
         '~': './src',
-        '@': './src/js', // Убедитесь, что тут правильный путь
+        '@': './src/js',
         '@s': './src/css',
     },
-    //target: browserslistToEsbuild(), // --> ["chrome79", "edge92", "firefox91", "safari13.1"
 }
 
 import dartSass from 'sass';
