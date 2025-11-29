@@ -83,13 +83,10 @@ gulp.task('styles', () =>
     .pipe(browserSync.stream())
 );
 
-
-
 gulp.task('code', () => {
     return gulp.src('src/*.html')
         .pipe(browserSync.reload({ stream: true }))
 });
-
 
 gulp.task('js', () => {
     return gulp
@@ -98,7 +95,6 @@ gulp.task('js', () => {
         .pipe(gulp.dest('./src/assets/'))
         .pipe(browserSync.reload({ stream: true }))
 });
-
 
 gulp.task('js_prod', () => {
     return gulp
@@ -114,7 +110,6 @@ gulp.task('watch', () => {
   gulp.watch('src/js/**/*.js', gulp.parallel('js'));
   gulp.watch('src/*.html', gulp.parallel('code')); // для BrowserSync
 });
-
 
 gulp.task('default', gulp.parallel('browser-sync', 'styles', 'js', 'watch',));
 gulp.task('prod', gulp.parallel('browser-sync','styles', 'js_prod', 'watch',));

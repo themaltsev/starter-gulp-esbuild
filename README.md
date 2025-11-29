@@ -3,10 +3,9 @@ Starting templale by Aleksandr Maltsev
 Easy start for coding on JS
 
 Gulp основной сборщик
-Webpack собирает только js
+ESbild собирает только js
 
 Если ты не под виндой / if your system unix 
-
 
 Используй sudo -s
 
@@ -19,9 +18,11 @@ Webpack собирает только js
 Next go to in browser http://localhost:3000
 
 Чтобы очистить кэш в npm 
+
 npm cache clean --force
 
 refresh all packeges
+
 npx npm-check-updates -u && npm i
 
 Точка входа / entry point
