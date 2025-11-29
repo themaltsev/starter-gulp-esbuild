@@ -72,15 +72,7 @@ gulp.task('browser-sync', function () {
 
 
 // CSS сборка: Sass → PostCSS (Tailwind + Autoprefixer) → CleanCSS
-// gulp.task('styles', () =>
-//   gulp.src('src/sass/main.scss')
-//     .pipe(sass().on('error', sass.logError))
-//     .pipe(postcss()) // ✅ Без аргументов — читает postcss.config.js
-//     .pipe(cleancss())
-//     .pipe(rename({ suffix: '.min' }))
-//     .pipe(gulp.dest('src/assets'))
-//     .pipe(browserSync.stream())
-// );
+
 gulp.task('styles', () =>
   gulp.src('src/sass/main.scss') // ← .scss, не .sass
     .pipe(sass().on('error', sass.logError))
@@ -116,16 +108,12 @@ gulp.task('js_prod', () => {
         .pipe(browserSync.reload({ stream: true }))
 });
 
-
 gulp.task('watch', () => {
-    gulp.watch('src/css/*.css', gulp.parallel('styles'));
-    gulp.watch('src/sass/*.sass', gulp.parallel('styles'));
-    gulp.watch('src/sass/*.scss', gulp.parallel('styles'));
-    gulp.watch(['src/js/*.js'], gulp.parallel('js'));
-    gulp.watch('src/*.html', gulp.parallel('code'))
+  // Пересобирать стили, если изменился HTML или Sass
+  gulp.watch(['src/sass/**/*.scss', 'src/**/*.html'], gulp.parallel('styles'));
+  gulp.watch('src/js/**/*.js', gulp.parallel('js'));
+  gulp.watch('src/*.html', gulp.parallel('code')); // для BrowserSync
 });
-
-
 
 
 gulp.task('default', gulp.parallel('browser-sync', 'styles', 'js', 'watch',));
