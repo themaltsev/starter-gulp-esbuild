@@ -10,6 +10,7 @@ import postcss from 'gulp-postcss';
 import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
 import cssnano from 'cssnano';
+import postcssImport from 'postcss-import';
 
 
 import { createGulpEsbuild } from "gulp-esbuild"
@@ -75,6 +76,7 @@ gulp.task('styles', () =>
   gulp.src('src/sass/main.sass') // ← .scss, не .sass
     .pipe(sass().on('error', sass.logError))
     .pipe(postcss([
+        postcssImport(),
         tailwindcss(),
         autoprefixer(),
         cssnano({
