@@ -4,12 +4,40 @@ import cleancss from 'gulp-clean-css';
 import rename from 'gulp-rename';
 import notify from 'gulp-notify'
 
-import {createGulpEsbuild} from  "gulp-esbuild"
+import gulpSass from 'gulp-sass'
+import sassCompiler from 'sass'
+const sass = gulpSass(sassCompiler)
+import postcss from 'gulp-postcss';
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
+
+
+
+import { createGulpEsbuild } from "gulp-esbuild"
 const gulpEsbuild = createGulpEsbuild()
 import babel from 'esbuild-plugin-babel'
+import browserslistToEsbuild from 'browserslist-to-esbuild'
 
 
-const esb_config = {
+const esb_config_dev = {
+    outfile: "app.min.js",
+    bundle: true,
+    minify: false,
+    sourcemap: true,
+    logLevel: 'info',
+    format: 'esm',
+    target: ['esnext'],
+    plugins: [],
+    // Алиасы для укорачивания путей 
+    alias: {
+        '~': './src',
+        '@': './src/js',
+        '@s': './src/css',
+    },
+    target: browserslistToEsbuild(), // ← читает .browserslistrc
+}
+
+const esb_config_prod = {
     outfile: "app.min.js",
     bundle: true,
     minify: true,
@@ -17,26 +45,18 @@ const esb_config = {
     logLevel: 'info',
     format: 'esm',
     target: ['esnext'],
-    plugins: [ babel()],
-    
+    plugins: [babel()],
+
     // Алиасы для укорачивания путей 
     alias: {
         '~': './src',
         '@': './src/js',
         '@s': './src/css',
     },
+    target: browserslistToEsbuild(), // ← читает .browserslistrc
 }
 
-import dartSass from 'sass';
-import gulpSass from 'gulp-sass';
-const sass = gulpSass(dartSass);
-
-
-import postcss from 'gulp-postcss';
-import autoprefixer from 'autoprefixer';
-
-
-
+// BrowserSync
 gulp.task('browser-sync', function () {
     browserSync({
         server: {
@@ -50,15 +70,27 @@ gulp.task('browser-sync', function () {
     })
 });
 
-gulp.task('styles', function () {
-    return gulp.src('src/sass/main.sass')
-        .pipe(sass().on('error', notify.onError()))
-        .pipe(rename({ suffix: '.min', prefix: '' }))
-        .pipe(cleancss({ level: { 1: { specialComments: 0 } } }))
-        .pipe(postcss([autoprefixer()]))
-        .pipe(gulp.dest('src/assets'))
-        .pipe(browserSync.stream());
-});
+
+// CSS сборка: Sass → PostCSS (Tailwind + Autoprefixer) → CleanCSS
+// gulp.task('styles', () =>
+//   gulp.src('src/sass/main.scss')
+//     .pipe(sass().on('error', sass.logError))
+//     .pipe(postcss()) // ✅ Без аргументов — читает postcss.config.js
+//     .pipe(cleancss())
+//     .pipe(rename({ suffix: '.min' }))
+//     .pipe(gulp.dest('src/assets'))
+//     .pipe(browserSync.stream())
+// );
+gulp.task('styles', () =>
+  gulp.src('src/sass/main.scss') // ← .scss, не .sass
+    .pipe(sass().on('error', sass.logError))
+    .pipe(postcss([tailwindcss(), autoprefixer()])) // ← плагины напрямую
+    .pipe(cleancss())
+    .pipe(rename({ suffix: '.min' }))
+    .pipe(gulp.dest('src/assets'))
+    .pipe(browserSync.stream())
+);
+
 
 
 gulp.task('code', () => {
@@ -70,19 +102,31 @@ gulp.task('code', () => {
 gulp.task('js', () => {
     return gulp
         .src(`src/js/app.js`)
-        .pipe(gulpEsbuild(esb_config).on("error", notify.onError(), gulp.parallel('watch')))
+        .pipe(gulpEsbuild(esb_config_dev).on("error", notify.onError()))
         .pipe(gulp.dest('./src/assets/'))
         .pipe(browserSync.reload({ stream: true }))
+});
 
+
+gulp.task('js_prod', () => {
+    return gulp
+        .src(`src/js/app.js`)
+        .pipe(gulpEsbuild(esb_config_prod).on("error", notify.onError()))
+        .pipe(gulp.dest('./src/assets/'))
+        .pipe(browserSync.reload({ stream: true }))
 });
 
 
 gulp.task('watch', () => {
     gulp.watch('src/css/*.css', gulp.parallel('styles'));
     gulp.watch('src/sass/*.sass', gulp.parallel('styles'));
+    gulp.watch('src/sass/*.scss', gulp.parallel('styles'));
     gulp.watch(['src/js/*.js'], gulp.parallel('js'));
     gulp.watch('src/*.html', gulp.parallel('code'))
 });
 
 
-gulp.task('default', gulp.parallel('browser-sync', 'styles', 'watch', 'js',));
+
+
+gulp.task('default', gulp.parallel('browser-sync', 'styles', 'js', 'watch',));
+gulp.task('prod', gulp.parallel('browser-sync','styles', 'js_prod', 'watch',));
