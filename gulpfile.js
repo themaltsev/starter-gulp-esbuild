@@ -1,6 +1,5 @@
 import gulp from 'gulp';
 import browserSync from 'browser-sync';
-import cleancss from 'gulp-clean-css';
 import rename from 'gulp-rename';
 import notify from 'gulp-notify'
 
@@ -10,7 +9,7 @@ const sass = gulpSass(sassCompiler)
 import postcss from 'gulp-postcss';
 import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
-
+import cssnano from 'cssnano';
 
 
 import { createGulpEsbuild } from "gulp-esbuild"
@@ -70,14 +69,22 @@ gulp.task('browser-sync', function () {
     })
 });
 
-
 // CSS сборка: Sass → PostCSS (Tailwind + Autoprefixer) → CleanCSS
 
 gulp.task('styles', () =>
-  gulp.src('src/sass/main.scss') // ← .scss, не .sass
+  gulp.src('src/sass/main.sass') // ← .scss, не .sass
     .pipe(sass().on('error', sass.logError))
-    .pipe(postcss([tailwindcss(), autoprefixer()])) // ← плагины напрямую
-    .pipe(cleancss())
+    .pipe(postcss([
+        tailwindcss(),
+        autoprefixer(),
+        cssnano({
+            preset: ['default', {
+                discardComments: { removeAll: true },
+                reduceTransforms: false,
+                zindex: false
+            }]
+        })
+    ]))
     .pipe(rename({ suffix: '.min' }))
     .pipe(gulp.dest('src/assets'))
     .pipe(browserSync.stream())
