@@ -116,6 +116,8 @@ gulp.task('js_prod', () => {
 gulp.task('watch', () => {
   // Пересобирать стили, если изменился HTML или Sass
   gulp.watch(['src/sass/**/*.scss', 'src/**/*.html'], gulp.parallel('styles'));
+  gulp.watch(['src/sass/**/*.sass', 'src/**/*.html'], gulp.parallel('styles'));
+  gulp.watch(['src/css/**/*.css', 'src/**/*.html'], gulp.parallel('styles'));
   gulp.watch('src/js/**/*.js', gulp.parallel('js'));
   gulp.watch('src/*.html', gulp.parallel('code')); // для BrowserSync
 });
